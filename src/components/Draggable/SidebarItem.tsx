@@ -18,7 +18,13 @@ export function SidebarItem({ id, itemName }: SidebarItemProps) {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      style={{ padding: '10px', border: '1px solid black', marginBottom: '10px' }}
+      style={{
+        padding: '10px',
+        border: '1px solid black',
+        margin: '0 10px', // Ajuste horizontal
+        backgroundColor: 'white',
+        cursor: 'grab'
+      }}
     >
       {itemName} {/* Exibe o nome do item */}
     </div>

@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import { useDroppable } from '@dnd-kit/core';
+import React from "react";
+import { useDroppable } from "@dnd-kit/core";
 
 interface DroppableProps {
   id: string;
@@ -13,16 +13,7 @@ export function Droppable({ id, children }: DroppableProps) {
   });
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        width: '200px',
-        height: '300px',
-        border: '2px dashed gray',
-        padding: '20px',
-        backgroundColor: isOver ? '#e0f7fa' : '#fff',
-      }}
-    >
+    <div ref={setNodeRef}>
       {children} {/* Renderiza os itens dropados aqui */}
     </div>
   );
