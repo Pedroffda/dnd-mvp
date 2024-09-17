@@ -43,18 +43,18 @@ export default function Page() {
   const areas = [
     { id: "segunda-manha", title: "Segunda Manhã", limit: 2 }, // Define 3 vagas, por exemplo
     { id: "segunda-tarde", title: "Segunda Tarde", limit: 2 },
-    { id: "terca-manha", title: "Terça Manhã", limit: 1 },
-    { id: "terca-tarde", title: "Terça Tarde", limit: 1 },
-    { id: "quarta-manha", title: "Quarta Manhã", limit: 1 },
-    { id: "quarta-tarde", title: "Quarta Tarde", limit: 1 },
-    { id: "quinta-manha", title: "Quinta Manhã", limit: 1 },
-    { id: "quinta-tarde", title: "Quinta Tarde", limit: 1 },
+    { id: "terca-manha", title: "Terça Manhã", limit: 2 },
+    { id: "terca-tarde", title: "Terça Tarde", limit: 2 },
+    { id: "quarta-manha", title: "Quarta Manhã", limit: 2 },
+    { id: "quarta-tarde", title: "Quarta Tarde", limit: 2 },
+    { id: "quinta-manha", title: "Quinta Manhã", limit: 2 },
+    { id: "quinta-tarde", title: "Quinta Tarde", limit: 2 },
     { id: "sexta-manha", title: "Sexta Manhã", limit: 2 },
-    { id: "sexta-tarde", title: "Sexta Tarde", limit: 1 },
-    { id: "sabado-manha", title: "Sábado Manhã", limit: 1 },
-    { id: "sabado-tarde", title: "Sábado Tarde", limit: 1 },
-    { id: "domingo-manha", title: "Domingo Manhã", limit: 1 },
-    { id: "domingo-tarde", title: "Domingo Tarde", limit: 1 },
+    { id: "sexta-tarde", title: "Sexta Tarde", limit: 2 },
+    { id: "sabado-manha", title: "Sábado Manhã", limit: 2 },
+    { id: "sabado-tarde", title: "Sábado Tarde", limit: 2 },
+    { id: "domingo-manha", title: "Domingo Manhã", limit: 2 },
+    { id: "domingo-tarde", title: "Domingo Tarde", limit: 2 },
   ];
 
   const onDragEnd = (event: DragEndEvent) => {
