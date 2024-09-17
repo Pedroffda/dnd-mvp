@@ -7,18 +7,20 @@ interface DroppableAreaProps {
   id: string;
   items: { id: string; item: string }[];
   areaId: string;
-  limit: number; // Número de vagas (limite)
+  limit?: number; // Número de vagas (limite)
+  borderColor?: string; // Cor da borda
 }
 
 export function DroppableArea({
   id,
   items,
   areaId,
-  limit,
+  limit=1,
+  borderColor = "#ddd",
 }: DroppableAreaProps) {
   return (
     <Droppable id={id}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+      <div style={{ display: "flex", flexDirection: "column",}}>
         {[...Array(limit)].map((_, index) => (
           // Dentro do `DroppableArea`
           <div
@@ -32,7 +34,7 @@ export function DroppableArea({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              borderLeft: items[index] ? "5px solid #d9534f" : "5px solid #ddd", // Bordas laterais coloridas
+              borderLeft: `5px solid ${borderColor}`, // Cor da borda
               fontWeight: items[index] ? "bold" : "normal", // Texto em negrito se houver item
             }}
           >

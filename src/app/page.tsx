@@ -25,22 +25,36 @@ export default function Page() {
     "quinta-tarde": [],
     "sexta-manha": [],
     "sexta-tarde": [],
+    "sabado-manha": [],
+    "sabado-tarde": [],
+    "domingo-manha": [],
+    "domingo-tarde": [],
     // Adicione mais turnos se necessário
   });
 
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
+  const turnos = [
+    { id: "manha", title: "Manhã (07:00 - 13:00)", color: "#d9534f" },
+    { id: "tarde", title: "Tarde (13:00 - 19:00)", color: "#f0ad4e" },
+    // Adicione outros turnos dinamicamente se necessário
+  ];
+
   const areas = [
-    { id: "segunda-manha", title: "Segunda Manhã", limit: 3 }, // Define 3 vagas, por exemplo
+    { id: "segunda-manha", title: "Segunda Manhã", limit: 2 }, // Define 3 vagas, por exemplo
     { id: "segunda-tarde", title: "Segunda Tarde", limit: 2 },
-    { id: "terca-manha", title: "Terça Manhã", limit: 3 },
-    { id: "terca-tarde", title: "Terça Tarde", limit: 2 },
-    { id: "quarta-manha", title: "Quarta Manhã", limit: 3 },
-    { id: "quarta-tarde", title: "Quarta Tarde", limit: 2 },
-    { id: "quinta-manha", title: "Quinta Manhã", limit: 3 },
-    { id: "quinta-tarde", title: "Quinta Tarde", limit: 2 },
-    { id: "sexta-manha", title: "Sexta Manhã", limit: 3 },
-    { id: "sexta-tarde", title: "Sexta Tarde", limit: 2 },
+    { id: "terca-manha", title: "Terça Manhã", limit: 1 },
+    { id: "terca-tarde", title: "Terça Tarde", limit: 1 },
+    { id: "quarta-manha", title: "Quarta Manhã", limit: 1 },
+    { id: "quarta-tarde", title: "Quarta Tarde", limit: 1 },
+    { id: "quinta-manha", title: "Quinta Manhã", limit: 1 },
+    { id: "quinta-tarde", title: "Quinta Tarde", limit: 1 },
+    { id: "sexta-manha", title: "Sexta Manhã", limit: 2 },
+    { id: "sexta-tarde", title: "Sexta Tarde", limit: 1 },
+    { id: "sabado-manha", title: "Sábado Manhã", limit: 1 },
+    { id: "sabado-tarde", title: "Sábado Tarde", limit: 1 },
+    { id: "domingo-manha", title: "Domingo Manhã", limit: 1 },
+    { id: "domingo-tarde", title: "Domingo Tarde", limit: 1 },
   ];
 
   const onDragEnd = (event: DragEndEvent) => {
@@ -123,9 +137,10 @@ export default function Page() {
                     border: "1px solid #ccc",
                     padding: "10px",
                     textAlign: "center",
+                    width: "150px",
                   }}
                 >
-                  Horário
+                  Escalas
                 </th>
                 <th
                   style={{
@@ -172,45 +187,57 @@ export default function Page() {
                 >
                   Sexta
                 </th>
+                <th
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  Sábado
+                </th>
+                <th
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  Domingo
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                  Manhã (07:00 - 13:00)
-                </td>
-                {areas.slice(0, 5).map((area) => (
+              {turnos.map((turno) => (
+                <tr key={turno.id}>
                   <td
-                    key={area.id}
-                    style={{ border: "1px solid #ccc", padding: "10px" }}
+                    style={{
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      // display: "flex",
+                      // alignItems: "center",
+                      // height: "10px", // Ajusta a altura mínima da célula do turno
+                      borderLeft: `5px solid ${turno.color}`,
+                      // borderRight: `5px solid ${turno.color}`,
+                    }}
                   >
-                    <DroppableArea
-                      id={area.id}
-                      items={droppedItems[area.id] || []}
-                      areaId={area.id}
-                      limit={area.limit} // Agora passando o limite de vagas
-                    />
+                    {turno.title}
                   </td>
-                ))}
-              </tr>
-              <tr>
-                <td style={{ border: "1px solid #ccc", padding: "10px" }}>
-                  Tarde (13:00 - 19:00)
-                </td>
-                {areas.slice(5, 10).map((area) => (
-                  <td
-                    key={area.id}
-                    style={{ border: "1px solid #ccc", padding: "10px" }}
-                  >
-                    <DroppableArea
-                      id={area.id}
-                      items={droppedItems[area.id] || []}
-                      areaId={area.id}
-                      limit={area.limit} // Agora passando o limite de vagas
-                    />
-                  </td>
-                ))}
-              </tr>
+                  {areas
+                    .filter((area) => area.id.includes(turno.id)) // Filtra as áreas para o turno específico
+                    .map((area) => (
+                      <td key={area.id} style={{ border: "1px solid #ccc" }}>
+                        <DroppableArea
+                          id={area.id}
+                          items={droppedItems[area.id] || []}
+                          areaId={area.id}
+                          limit={area.limit}
+                          borderColor={turno.color}
+                        />
+                      </td>
+                    ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
