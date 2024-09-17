@@ -30,7 +30,7 @@ export function DroppableArea({
               minHeight: "30px", // Altura das células
               padding: "2px",
               textAlign: "center",
-              backgroundColor: items[index] ? "#fefefe" : "#f9f9f9", // Cor para células com e sem item
+              backgroundColor: items[index] ? "#fefefe" : "#fefefe", // Cor para células com e sem item
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
