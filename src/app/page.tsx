@@ -59,6 +59,17 @@ export default function Page() {
     { id: "domingo", title: "Domingo" },
   ];
 
+  // Datas correspondentes aos dias da semana
+  const dates = [
+    { id: "segunda", date: "12/12" },
+    { id: "terca", date: "13/12" },
+    { id: "quarta", date: "14/12" },
+    { id: "quinta", date: "15/12" },
+    { id: "sexta", date: "16/12" },
+    { id: "sabado", date: "17/12" },
+    { id: "domingo", date: "18/12" },
+  ];
+
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const itemId = String(active.id);
@@ -156,6 +167,22 @@ export default function Page() {
                     }}
                   >
                     {header.title}
+                  </th>
+                ))}
+              </tr>
+              <tr>
+                <th style={{ border: "1px solid #ccc" }}></th>
+                {dates.map((date) => (
+                  <th
+                    key={date.id}
+                    style={{
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      backgroundColor: "#f0f0f0",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    {date.date}
                   </th>
                 ))}
               </tr>
