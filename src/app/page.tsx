@@ -88,7 +88,7 @@ export default function Page() {
     if (over) {
       const areaId = over.id;
 
-      if (areaId === "trash-bin") {
+      if (areaId === "elements-sidebar") {
         const sourceArea = active.data.current?.area;
         if (sourceArea) {
           // Remover o item da área de origem (sourceArea)
@@ -239,7 +239,7 @@ export default function Page() {
       </Box>
 
       {/* Lixeira */}
-      <TrashBin />
+      {/* <TrashBin /> */}
 
       {/* Overlay do item sendo arrastado */}
       <DragOverlay>

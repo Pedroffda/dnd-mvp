@@ -12,6 +12,17 @@ interface DroppableAreaProps {
   borderColor?: string; // Cor da borda
 }
 
+const styles = {
+  border: "1px solid #e0e0e0",
+  minHeight: "30px",
+  padding: "8px",
+  textAlign: "center",
+  backgroundColor: "#fefefe",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
 export function DroppableArea({
   id,
   items,
@@ -26,17 +37,13 @@ export function DroppableArea({
           <Box
             key={`${id}-${index}`}
             sx={{
-              border: "1px solid #e0e0e0",
-              minHeight: "30px",
-              padding: "8px",
-              textAlign: "center",
-              backgroundColor: items[index] ? "#fefefe" : "#fefefe",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderLeft: items[index] ? `5px solid ${borderColor}` : "none", // Borda à esquerda se houver item
+              ...styles,
+              borderLeft: items[index] ? `5px solid ${borderColor}` : "none",
               fontWeight: items[index] ? "bold" : "normal",
             }}
+            onClick={
+              () => alert(`Clicou na área ${areaId} (em construção) [adicionar form]`) 
+            }
           >
             {items[index] ? (
               <DraggableItem
@@ -46,7 +53,7 @@ export function DroppableArea({
                 area={areaId}
               />
             ) : (
-              "-" // Exibe um traço quando não há item
+              "" // Exibe um traço quando não há item
             )}
           </Box>
         ))}

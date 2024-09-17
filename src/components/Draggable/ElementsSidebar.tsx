@@ -2,6 +2,7 @@
 import React from 'react';
 import { SidebarItem } from './SidebarItem';
 import { Box } from '@mui/material'; // Importando o Box do MUI
+import { useDroppable } from '@dnd-kit/core';
 
 export function ElementsSidebar() {
   const items = ['Raifran Silva', 'Luis Mendes', 'Juan Ferreira', 
@@ -13,8 +14,13 @@ export function ElementsSidebar() {
     // "Viviane Ferreira", "Patricia Silva", "Sandra Mendes", "Luciana Ferreira",
   ]; // Itens disponíveis no header
 
+  const { isOver, setNodeRef } = useDroppable({
+    id: 'elements-sidebar', // Identificador da barra lateral
+  });
+
   return (
     <Box
+      ref={setNodeRef}
       sx={{
         display: 'flex',
         justifyContent: 'center',
