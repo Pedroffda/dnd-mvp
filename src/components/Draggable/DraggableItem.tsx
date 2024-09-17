@@ -24,7 +24,7 @@ export function DraggableItem({ id, item, area }: DraggableItemProps) {
         width: "100%",
         backgroundColor: isDragging ? "lightblue" : "white", // Estilo diferente quando arrastado
         boxShadow: isDragging ? "0px 4px 12px rgba(0,0,0,0.2)" : "none",
-        border: isDragging ? "1px solid lightblue" : "1px solid black",
+        border: isDragging ? "1px solid lightblue" : "",
         cursor: "grab",
       }}
     >

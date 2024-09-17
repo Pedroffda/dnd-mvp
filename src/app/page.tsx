@@ -229,11 +229,7 @@ export default function Page() {
                     style={{
                       border: "1px solid #ccc",
                       padding: "10px",
-                      // display: "flex",
-                      // alignItems: "center",
-                      // height: "10px", // Ajusta a altura mínima da célula do turno
                       borderLeft: `5px solid ${turno.color}`,
-                      // borderRight: `5px solid ${turno.color}`,
                     }}
                   >
                     {turno.title}
