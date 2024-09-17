@@ -34,7 +34,7 @@ export function DroppableArea({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              borderLeft: `5px solid ${borderColor}`, // Cor da borda
+              borderLeft: items[index] ? `5px solid ${borderColor}` : "none", // Borda à esquerda se houver item
               fontWeight: items[index] ? "bold" : "normal", // Texto em negrito se houver item
             }}
           >
