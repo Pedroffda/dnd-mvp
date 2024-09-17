@@ -28,7 +28,9 @@ export function DraggableItem({ id, item, area }: DraggableItemProps) {
         cursor: "grab",
       }}
     >
-      {item} {/* Exibe o nome/label do item */}
+      {item} 
+      {/* " - " {area} " - "
+      {id}  */}
     </div>
   );
 }

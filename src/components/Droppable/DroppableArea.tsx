@@ -2,6 +2,7 @@
 import React from "react";
 import { DraggableItem } from "@/components/Draggable/DraggableItem";
 import { Droppable } from ".";
+import { Box } from "@mui/material"; // Importando o Box do Material-UI
 
 interface DroppableAreaProps {
   id: string;
@@ -15,27 +16,26 @@ export function DroppableArea({
   id,
   items,
   areaId,
-  limit=1,
+  limit = 1,
   borderColor = "#ddd",
 }: DroppableAreaProps) {
   return (
     <Droppable id={id}>
-      <div style={{ display: "flex", flexDirection: "column",}}>
+      <Box display="flex" flexDirection="column">
         {[...Array(limit)].map((_, index) => (
-          // Dentro do `DroppableArea`
-          <div
+          <Box
             key={`${id}-${index}`}
-            style={{
+            sx={{
               border: "1px solid #e0e0e0",
-              minHeight: "30px", // Altura das células
-              padding: "2px",
+              minHeight: "30px",
+              padding: "8px",
               textAlign: "center",
-              backgroundColor: items[index] ? "#fefefe" : "#fefefe", // Cor para células com e sem item
+              backgroundColor: items[index] ? "#fefefe" : "#fefefe",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               borderLeft: items[index] ? `5px solid ${borderColor}` : "none", // Borda à esquerda se houver item
-              fontWeight: items[index] ? "bold" : "normal", // Texto em negrito se houver item
+              fontWeight: items[index] ? "bold" : "normal",
             }}
           >
             {items[index] ? (
@@ -48,9 +48,9 @@ export function DroppableArea({
             ) : (
               "-" // Exibe um traço quando não há item
             )}
-          </div>
+          </Box>
         ))}
-      </div>
+      </Box>
     </Droppable>
   );
 }

@@ -11,6 +11,17 @@ import { v4 as uuidv4 } from "uuid";
 import { TrashBin } from "@/components/Draggable/TrashBin";
 import { DroppableArea } from "@/components/Droppable/DroppableArea";
 
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+} from "@mui/material";
+
 export default function Page() {
   const [droppedItems, setDroppedItems] = useState<
     Record<string, { id: string; item: string }[]>
@@ -133,140 +144,122 @@ export default function Page() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-        padding: "20px",
-      }}
-    >
-      <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-        {/* Header de Itens Draggables */}
-        <ElementsSidebar />
+    <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+      {/* Header de Itens Draggables */}
+      <ElementsSidebar />
 
-        {/* Tabela de turnos */}
-        <div style={{ flexGrow: 1 }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              marginTop: "20px",
+      {/* Tabela de turnos */}
+      <Box sx={{ flexGrow: 1, mt: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {headers.map((header) => (
+                <TableCell
+                  key={header.id}
+                  sx={{
+                    border: "1px solid #ccc",
+                    padding: 2,
+                    backgroundColor: "#f9f9f9",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {header.title}
+                </TableCell>
+              ))}
+            </TableRow>
+            <TableRow>
+              <TableCell
+                sx={{ border: "1px solid #ccc", backgroundColor: "#f0f0f0" }}
+              ></TableCell>
+              {dates.map((date) => (
+                <TableCell
+                  key={date.id}
+                  sx={{
+                    border: "1px solid #ccc",
+                    padding: 0,
+                    backgroundColor: "#f0f0f0",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {date.date}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {turnos.map((turno) => (
+              <TableRow key={turno.id}>
+                <TableCell
+                  sx={{
+                    border: "1px solid #ccc",
+                    padding: 2,
+                    borderLeft: `5px solid ${turno.color}`,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    maxWidth: "50px",
+                  }}
+                >
+                  {turno.title}
+                </TableCell>
+                {headers
+                  .filter((header) => header.id !== "turno")
+                  .map((header) => {
+                    const area = areas.find(
+                      (area) =>
+                        area.turnoId === turno.id &&
+                        area.diaDaSemana === header.id
+                    );
+                    return (
+                      <TableCell
+                        key={`${turno.id}-${header.id}`}
+                        sx={{ border: "1px solid #ccc", padding: 0, minWidth: "150px" }}
+                      >
+                        {area ? (
+                          <DroppableArea
+                            id={area.id}
+                            items={droppedItems[area.id] || []}
+                            areaId={area.id}
+                            limit={area.limit}
+                            borderColor={turno.color}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                    );
+                  })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+
+      {/* Lixeira */}
+      <TrashBin />
+
+      {/* Overlay do item sendo arrastado */}
+      <DragOverlay>
+        {activeItem ? (
+          <Box
+            sx={{
+              padding: 2,
+              width: "200px",
+              backgroundColor: "white",
+              border: "1px solid #ccc",
+              boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+              alignItems: "center",
+              justifyContent: "center",
+              display: "flex",
             }}
           >
-            <thead>
-              <tr>
-                {headers.map((header) => (
-                  <th
-                    key={header.id}
-                    style={{
-                      border: "1px solid #ccc",
-                      width: "100px",
-                      padding: "10px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                  >
-                    {header.title}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                <th style={{ border: "1px solid #ccc" }}></th>
-                {dates.map((date) => (
-                  <th
-                    key={date.id}
-                    style={{
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      backgroundColor: "#f0f0f0",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    {date.date}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {turnos.map((turno) => (
-                <tr key={turno.id}>
-                  <td
-                    style={{
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      borderLeft: `5px solid ${turno.color}`,
-                      alignContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        // fontWeight: "bold",
-                      }}
-                    >
-                      {turno.title}
-                    </div>
-                  </td>
-                  {headers
-                    .filter((header) => header.id !== "turno") // Ignorar o cabeçalho de turno
-                    .map((header) => {
-                      // Filtra áreas por turnoId e diaDaSemana
-                      const area = areas.find(
-                        (area) =>
-                          area.turnoId === turno.id &&
-                          area.diaDaSemana === header.id
-                      );
-                      return (
-                        <td
-                          key={`${turno.id}-${header.id}`}
-                          style={{ border: "1px solid #ccc" }}
-                        >
-                          {area ? (
-                            <DroppableArea
-                              id={area.id}
-                              items={droppedItems[area.id] || []}
-                              areaId={area.id}
-                              limit={area.limit}
-                              borderColor={turno.color}
-                            />
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                      );
-                    })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Lixeira */}
-        <TrashBin />
-
-        {/* Overlay do item sendo arrastado */}
-        <DragOverlay>
-          {activeItem ? (
-            <div
-              style={{
-                padding: "10px",
-                width: "200px",
-                backgroundColor: "white",
-                border: "1px solid #ccc",
-                // borderRadius: "5px",
-                boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-              }}
-            >
-              {activeItem}
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
-    </div>
+            {activeItem}
+          </Box>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 }
