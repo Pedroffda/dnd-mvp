@@ -9,7 +9,7 @@ interface DraggableItemProps {
 }
 
 export function DraggableItem({ id, item, area }: DraggableItemProps) {
-  const { attributes, listeners, setNodeRef } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id, // Usamos o id para controle de identificação
     data: { item, area }, // Passamos o nome e a área atual
   });
@@ -21,9 +21,11 @@ export function DraggableItem({ id, item, area }: DraggableItemProps) {
       {...listeners}
       style={{
         padding: "5px",
-        // border: "1px solid black",
-        // marginBottom: "10px",
-        backgroundColor: "white",
+        width: "100%",
+        backgroundColor: isDragging ? "lightblue" : "white", // Estilo diferente quando arrastado
+        boxShadow: isDragging ? "0px 4px 12px rgba(0,0,0,0.2)" : "none",
+        border: isDragging ? "1px solid lightblue" : "1px solid black",
+        cursor: "grab",
       }}
     >
       {item} {/* Exibe o nome/label do item */}

@@ -29,6 +29,13 @@ export default function Page() {
     "sabado-tarde": [],
     "domingo-manha": [],
     "domingo-tarde": [],
+    "segunda-noite": [],
+    "terca-noite": [],
+    "quarta-noite": [],
+    "quinta-noite": [],
+    "sexta-noite": [],
+    "sabado-noite": [],
+    "domingo-noite": [],
     // Adicione mais turnos se necessário
   });
 
@@ -37,6 +44,7 @@ export default function Page() {
   const turnos = [
     { id: "manha", title: "Manhã (07:00 - 13:00)", color: "#d9534f" },
     { id: "tarde", title: "Tarde (13:00 - 19:00)", color: "#f0ad4e" },
+    { id: "noite", title: "Noite (19:00 - 01:00)", color: "#5bc0de" },
     // Adicione outros turnos dinamicamente se necessário
   ];
 
@@ -55,6 +63,13 @@ export default function Page() {
     { id: "sabado-tarde", title: "Sábado Tarde", limit: 2 },
     { id: "domingo-manha", title: "Domingo Manhã", limit: 2 },
     { id: "domingo-tarde", title: "Domingo Tarde", limit: 2 },
+    { id: "segunda-noite", title: "Noite", limit: 2 },
+    { id: "terca-noite", title: "Noite", limit: 2 },
+    { id: "quarta-noite", title: "Noite", limit: 2 },
+    { id: "quinta-noite", title: "Noite", limit: 2 },
+    { id: "sexta-noite", title: "Noite", limit: 2 },
+    { id: "sabado-noite", title: "Noite", limit: 2 },
+    { id: "domingo-noite", title: "Noite", limit: 2 },
   ];
 
   const onDragEnd = (event: DragEndEvent) => {
@@ -120,7 +135,7 @@ export default function Page() {
       <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
         {/* Header de Itens Draggables */}
         <ElementsSidebar />
-
+        
         {/* Tabela de turnos */}
         <div style={{ flexGrow: 1 }}>
           <table
@@ -246,7 +261,19 @@ export default function Page() {
         <TrashBin />
 
         {/* Overlay do item sendo arrastado */}
-        <DragOverlay>{activeItem ? <div>{activeItem}</div> : null}</DragOverlay>
+        <DragOverlay>{activeItem ? <div
+        style={{
+          padding: "10px",
+          width: "200px",
+          backgroundColor: "white",
+          border: "1px solid #ccc",
+          // borderRadius: "5px",
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+          alignItems: "center",
+          justifyContent: "center",
+          display: "flex",
+        }}
+        >{activeItem}</div> : null}</DragOverlay>
       </DndContext>
     </div>
   );
