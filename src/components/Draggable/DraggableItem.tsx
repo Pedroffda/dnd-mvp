@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
+import { Box } from "@mui/material";
 
 interface DraggableItemProps {
   id: string; // Identificador único do item
@@ -15,22 +16,21 @@ export function DraggableItem({ id, item, area }: DraggableItemProps) {
   });
 
   return (
-    <div
+    <Box
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      style={{
+      sx={{
         padding: "5px",
         width: "100%",
-        backgroundColor: isDragging ? "lightblue" : "white", // Estilo diferente quando arrastado
+        backgroundColor: isDragging ? "lightblue" : "white", 
         boxShadow: isDragging ? "0px 4px 12px rgba(0,0,0,0.2)" : "none",
         border: isDragging ? "1px solid lightblue" : "",
         cursor: "grab",
+        fontWeight: "bold",
       }}
     >
       {item} 
-      {/* " - " {area} " - "
-      {id}  */}
-    </div>
+    </Box>
   );
 }
