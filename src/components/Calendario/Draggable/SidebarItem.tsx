@@ -3,7 +3,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 
 interface SidebarItemProps {
-  id: string;
+  id: number;
   itemName: string;
 }
 

@@ -6,7 +6,7 @@ import { Box } from "@mui/material"; // Importando o Box do Material-UI
 
 interface DroppableAreaProps {
   id: string;
-  items: { id: string; item: string }[];
+  items: { id: string; item: string, uId: string}[];
   areaId: string;
   limit?: number; // Número de vagas (limite)
   borderColor?: string; // Cor da borda
@@ -47,6 +47,7 @@ export function DroppableArea({
           >
             {items[index] ? (
               <DraggableItem
+                uId={items[index].uId}
                 key={items[index].id}
                 id={items[index].id}
                 item={items[index].item}

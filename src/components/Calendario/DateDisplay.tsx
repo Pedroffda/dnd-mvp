@@ -86,6 +86,10 @@ export default function DateDisplay({
           variant="text"
           onClick={mensal ? voltarMes : voltarSemana}
           disabled={!voltarSemana && !voltarMes}
+          sx={{
+            fontWeight: "bold",
+            fontSize: 20,
+          }}
         >
           {"<"}
         </Button>
@@ -98,6 +102,10 @@ export default function DateDisplay({
           variant="text"
           onClick={mensal ? irParaProximoMes : irParaProximaSemana}
           disabled={!irParaProximaSemana && !irParaProximoMes}
+          sx={{
+            fontWeight: "bold",
+            fontSize: 20,
+          }}
         >
           {">"}
         </Button>

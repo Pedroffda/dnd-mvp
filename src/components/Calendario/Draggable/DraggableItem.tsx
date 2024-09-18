@@ -4,15 +4,16 @@ import { useDraggable } from "@dnd-kit/core";
 import { Box } from "@mui/material";
 
 interface DraggableItemProps {
-  id: string; // Identificador único do item
-  item: string; // Nome/label do item
-  area: string; // Área atual do item
+  id: string; 
+  item: string; 
+  area: string; 
+  uId: string;
 }
 
-export function DraggableItem({ id, item, area }: DraggableItemProps) {
+export function DraggableItem({ id, item, area, uId }: DraggableItemProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id, // Usamos o id para controle de identificação
-    data: { item, area }, // Passamos o nome e a área atual
+    data: { item, area, uId }, // Passamos o nome e a área atual
   });
 
   return (

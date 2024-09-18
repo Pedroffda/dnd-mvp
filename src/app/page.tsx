@@ -23,7 +23,7 @@ import DateDisplay from "@/components/Calendario/DateDisplay";
 
 export default function Page() {
   const [droppedItems, setDroppedItems] = useState<
-    Record<string, { id: string; item: string }[]>
+    Record<string, { id: string; item: string; uId: string }[]>
   >({});
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
@@ -62,12 +62,71 @@ export default function Page() {
     diasDaSemana.push(date);
   }
 
+  type Turno = {
+    id: string;
+    title: string;
+    color: string;
+    [key: string]: any; // Allow dynamic properties
+  };
+
   const turnos = [
-    { id: "manha", title: "Manhã (07:00 - 13:00)", color: "#d9534f" },
-    { id: "tarde", title: "Tarde (13:00 - 19:00)", color: "#f0ad4e" },
-    { id: "noite", title: "Noite (19:00 - 01:00)", color: "#5bc0de" },
-    // Add other shifts dynamically if needed
+    {
+      id: "2",
+      title: "Manhã",
+      color: "#d9534f",
+      inicio: "07:00",
+      fim: "13:00",
+      vagas: 2,
+      domingo: true,
+      segunda: true,
+      terca: true,
+      quarta: true,
+      quinta: true,
+      sexta: true,
+      sabado: true,
+    },
+    {
+      id: "1",
+      title: "Tarde",
+      color: "#f0ad4e",
+      inicio: "13:00",
+      fim: "19:00",
+      vagas: 2,
+      domingo: true,
+      segunda: true,
+      terca: true,
+      quarta: true,
+      quinta: true,
+      sexta: true,
+      sabado: true,
+    },
+    {
+      id: "3",
+      title: "Noite",
+      color: "#5bc0de",
+      inicio: "19:00",
+      fim: "01:00",
+      vagas: 1,
+      domingo: true,
+      segunda: true,
+      terca: true,
+      quarta: true,
+      quinta: true,
+      sexta: false,
+      sabado: true,
+    },
+    // Add other shifts as needed
   ];
+
+  const dayOfWeekMap: { [key: number]: string } = {
+    0: "domingo",
+    1: "segunda",
+    2: "terca",
+    3: "quarta",
+    4: "quinta",
+    5: "sexta",
+    6: "sabado",
+  };
 
   const headers = [
     { id: "turno", title: "Turno" },
@@ -78,23 +137,40 @@ export default function Page() {
   ];
 
   // Generate areas based on shifts and dates
-  const areas: { id: string; turnoId: string; date: Date; limit: number }[] =
-    [];
+  const areas: {
+    id: string;
+    uId: string;
+    turnoId: string;
+    date: Date;
+    limit: number;
+  }[] = [];
+
   for (const turno of turnos) {
     for (const date of diasDaSemana) {
-      const areaId = `${turno.id}-${date.toISOString().split("T")[0]}`;
-      areas.push({
-        id: areaId,
-        turnoId: turno.id,
-        date: date,
-        limit: 2, // Adjust the limit as needed
-      });
+      const dayIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+      const dayName = dayOfWeekMap[dayIndex];
+
+      // Check if the turno is available on this day
+      if (turno[dayName as keyof typeof turno]) {
+        const areaId = `${turno.id}-${date.toISOString().split("T")[0]}`;
+        areas.push({
+          id: areaId,
+          turnoId: turno.id,
+          date: date,
+          limit: turno.vagas || 2,
+          uId: "",
+        });
+      }
     }
   }
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const itemId = String(active.id);
+    const itemName = active.data.current?.item || null;
+    const uId = active.data.current?.uId || null;
+
+    console.log("active", active);
 
     if (over) {
       const areaId = over.id;
@@ -127,7 +203,13 @@ export default function Page() {
             [sourceArea]: prev[sourceArea].filter((item) => item.id !== itemId),
             [areaId]: [
               ...(prev[areaId] || []),
-              { id: itemId, item: String(active.data.current?.item) },
+              {
+                id: itemId,
+                // item: String(active.data.current?.item)
+                item: itemName,
+                uId: uId,
+                // userId: itemId,
+              },
             ],
           }));
         } else if (
@@ -138,7 +220,16 @@ export default function Page() {
           // If the item is new (from the sidebar), add directly to the new area
           setDroppedItems((prev) => ({
             ...prev,
-            [areaId]: [...(prev[areaId] || []), { id: uuidv4(), item: itemId }],
+            [areaId]: [
+              ...(prev[areaId] || []),
+              {
+                // id: uuidv4(),
+                id: itemId,
+                // userId: itemId,
+                item: itemName,
+                uId: uuidv4(),
+              },
+            ],
           }));
         }
       }
@@ -155,20 +246,20 @@ export default function Page() {
   };
 
   // Simulated payload
-  const initialPayload = [
+  const initialPayload: {
+    turnoId: string;
+    date: string;
+    itemId: string;
+    itemName: string;
+    uId: string;
+  }[] = [
     {
-      turnoId: "manha",
+      turnoId: "1",
       date: "2024-09-16",
       itemId: "0df828ba-4587-457c-a113-9c85d49c12e7",
       itemName: "Raifran Silva",
+      uId: "some-unique-id-1",
     },
-    {
-      turnoId: "tarde",
-      date: "2024-09-16",
-      itemId: "0df828ba-4587-457c-a113-9c85d49c12e8",
-      itemName: "Raifran Silva",
-    },
-    // ...more items
   ];
 
   const processPayload = (
@@ -177,18 +268,23 @@ export default function Page() {
       date: string;
       itemId: string;
       itemName: string;
+      uId: string;
     }[]
   ) => {
-    const newDroppedItems: Record<string, { id: string; item: string }[]> = {};
+    const newDroppedItems: Record<
+      string,
+      { id: string; item: string; uId: string }[]
+    > = {};
 
-    payload.forEach(({ turnoId, date, itemId, itemName }) => {
-      const areaId = `${turnoId}-${date}`; // Construct the area ID
+    payload.forEach(({ turnoId, date, itemId, itemName, uId }) => {
+      const areaId = `${turnoId}-${date}`;
       if (!newDroppedItems[areaId]) {
         newDroppedItems[areaId] = [];
       }
       newDroppedItems[areaId].push({
         id: itemId,
         item: itemName,
+        uId: uId,
       });
     });
 
@@ -206,11 +302,10 @@ export default function Page() {
       currentWeekDates.includes(date)
     );
 
-    const newDroppedItems = processPayload(currentWeekPayload);
+    const newDroppedItems = processPayload(currentWeekPayload || []);
 
-    setDroppedItems(newDroppedItems);
+    setDroppedItems(newDroppedItems || {});
   }, [dataAtual]);
-
 
   return (
     <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
@@ -279,16 +374,28 @@ export default function Page() {
                     alignItems: "center",
                     textAlign: "center",
                     fontWeight: "bold",
-                    maxWidth: "50px",
+                    // maxWidth: "100px",
                   }}
                 >
                   {turno.title}
+                  <Box
+                    sx={{
+                      padding: 0,
+
+                      fontSize: 12,
+                      color: "#777",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    {`${turno.inicio} - ${turno.fim}`}
+                  </Box>
                 </TableCell>
                 {diasDaSemana.map((date) => {
                   const areaId = `${turno.id}-${
                     date.toISOString().split("T")[0]
                   }`;
                   const area = areas.find((area) => area.id === areaId);
+                  const isAvailable = area !== undefined;
                   return (
                     <TableCell
                       key={areaId}
@@ -296,9 +403,10 @@ export default function Page() {
                         border: "1px solid #ccc",
                         padding: 0,
                         minWidth: "150px",
+                        backgroundColor: isAvailable ? "inherit" : "#f5f5f5",
                       }}
                     >
-                      {area ? (
+                      {isAvailable ? (
                         <DroppableArea
                           id={area.id}
                           items={droppedItems[area.id] || []}
@@ -307,7 +415,18 @@ export default function Page() {
                           borderColor={turno.color}
                         />
                       ) : (
-                        ""
+                        <Box
+                          sx={{
+                            color: "#aaa",
+                            pointerEvents: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {/* You can display a message or icon here */}
+                          Indisponível
+                        </Box>
                       )}
                     </TableCell>
                   );
@@ -339,6 +458,5 @@ export default function Page() {
       </DragOverlay>
       <pre>{JSON.stringify(droppedItems, null, 2)}</pre>
     </DndContext>
-    
   );
 }
