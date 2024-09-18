@@ -1,15 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { ElementsSidebar } from "@/components/Draggable/ElementsSidebar"; // Agora é um header
+import { ElementsSidebar } from "@/components/Calendario/Draggable/ElementsSidebar";
 import { v4 as uuidv4 } from "uuid";
-import { TrashBin } from "@/components/Draggable/TrashBin";
-import { DroppableArea } from "@/components/Droppable/DroppableArea";
+import { DroppableArea } from "@/components/Calendario/Droppable/DroppableArea";
 
 import {
   Box,
@@ -18,68 +17,80 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Paper,
-  Typography,
+  Button,
 } from "@mui/material";
+import DateDisplay from "@/components/Calendario/DateDisplay";
 
 export default function Page() {
   const [droppedItems, setDroppedItems] = useState<
     Record<string, { id: string; item: string }[]>
   >({});
-
   const [activeItem, setActiveItem] = useState<string | null>(null);
+
+  const [dataAtual, setDataAtual] = useState(new Date());
+
+  const getInicioSemana = (date: Date) => {
+    const inicio = new Date(date);
+    const dia = inicio.getDay();
+    const diff = inicio.getDate() - dia + (dia === 0 ? -6 : 1);
+    inicio.setDate(diff);
+    return inicio;
+  };
+
+  const irParaProximaSemana = () => {
+    setDataAtual((prevDate) => {
+      const novaData = new Date(prevDate);
+      novaData.setDate(novaData.getDate() + 7);
+      return novaData;
+    });
+  };
+
+  const voltarSemana = () => {
+    setDataAtual((prevDate) => {
+      const novaData = new Date(prevDate);
+      novaData.setDate(novaData.getDate() - 7);
+      return novaData;
+    });
+  };
+
+  // Generate dates for the current week
+  const inicioSemana = getInicioSemana(dataAtual);
+  const diasDaSemana: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(inicioSemana);
+    date.setDate(inicioSemana.getDate() + i);
+    diasDaSemana.push(date);
+  }
 
   const turnos = [
     { id: "manha", title: "Manhã (07:00 - 13:00)", color: "#d9534f" },
     { id: "tarde", title: "Tarde (13:00 - 19:00)", color: "#f0ad4e" },
     { id: "noite", title: "Noite (19:00 - 01:00)", color: "#5bc0de" },
-    // Adicione outros turnos dinamicamente se necessário
+    // Add other shifts dynamically if needed
   ];
 
-  const areas = [
-    { id: "1", turnoId: "manha", diaDaSemana: "segunda", limit: 2 },
-    { id: "2", turnoId: "manha", diaDaSemana: "terca", limit: 2 },
-    { id: "3", turnoId: "tarde", diaDaSemana: "segunda", limit: 2 },
-    { id: "4", turnoId: "tarde", diaDaSemana: "terca", limit: 2 },
-    { id: "5", turnoId: "noite", diaDaSemana: "segunda", limit: 2 },
-    { id: "6", turnoId: "noite", diaDaSemana: "terca", limit: 2 },
-    { id: "7", turnoId: "manha", diaDaSemana: "quarta", limit: 2 },
-    { id: "8", turnoId: "manha", diaDaSemana: "quinta", limit: 2 },
-    { id: "9", turnoId: "tarde", diaDaSemana: "quarta", limit: 2 },
-    { id: "10", turnoId: "tarde", diaDaSemana: "quinta", limit: 2 },
-    { id: "11", turnoId: "noite", diaDaSemana: "quarta", limit: 2 },
-    { id: "12", turnoId: "noite", diaDaSemana: "quinta", limit: 2 },
-    { id: "13", turnoId: "manha", diaDaSemana: "sexta", limit: 2 },
-    { id: "14", turnoId: "manha", diaDaSemana: "sabado", limit: 2 },
-    { id: "15", turnoId: "tarde", diaDaSemana: "sexta", limit: 2 },
-    { id: "16", turnoId: "tarde", diaDaSemana: "sabado", limit: 2 },
-    { id: "17", turnoId: "noite", diaDaSemana: "sexta", limit: 2 },
-    { id: "18", turnoId: "noite", diaDaSemana: "sabado", limit: 2 },
-    { id: "19", turnoId: "manha", diaDaSemana: "domingo", limit: 2 },
-    { id: "20", turnoId: "tarde", diaDaSemana: "domingo", limit: 2 },
-    { id: "21", turnoId: "noite", diaDaSemana: "domingo", limit: 2 },
-  ];
   const headers = [
     { id: "turno", title: "Turno" },
-    { id: "segunda", title: "Segunda" },
-    { id: "terca", title: "Terça" },
-    { id: "quarta", title: "Quarta" },
-    { id: "quinta", title: "Quinta" },
-    { id: "sexta", title: "Sexta" },
-    { id: "sabado", title: "Sábado" },
-    { id: "domingo", title: "Domingo" },
+    ...diasDaSemana.map((date) => ({
+      id: date.toISOString().split("T")[0], // Use ISO date string as id
+      title: date.toLocaleDateString("pt-BR", { weekday: "long" }),
+    })),
   ];
 
-  // Datas correspondentes aos dias da semana
-  const dates = [
-    { id: "segunda", date: "12/12" },
-    { id: "terca", date: "13/12" },
-    { id: "quarta", date: "14/12" },
-    { id: "quinta", date: "15/12" },
-    { id: "sexta", date: "16/12" },
-    { id: "sabado", date: "17/12" },
-    { id: "domingo", date: "18/12" },
-  ];
+  // Generate areas based on shifts and dates
+  const areas: { id: string; turnoId: string; date: Date; limit: number }[] =
+    [];
+  for (const turno of turnos) {
+    for (const date of diasDaSemana) {
+      const areaId = `${turno.id}-${date.toISOString().split("T")[0]}`;
+      areas.push({
+        id: areaId,
+        turnoId: turno.id,
+        date: date,
+        limit: 2, // Adjust the limit as needed
+      });
+    }
+  }
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -88,10 +99,13 @@ export default function Page() {
     if (over) {
       const areaId = over.id;
 
-      if (areaId === "elements-sidebar") {
+      if (
+        areaId === "elements-sidebar" &&
+        active.data.current?.area !== undefined
+      ) {
         const sourceArea = active.data.current?.area;
         if (sourceArea) {
-          // Remover o item da área de origem (sourceArea)
+          // Remove the item from the source area
           setDroppedItems((prev) => ({
             ...prev,
             [sourceArea]: prev[sourceArea].filter((item) => item.id !== itemId),
@@ -100,20 +114,20 @@ export default function Page() {
       } else {
         const sourceArea = active.data.current?.area;
 
-        // Verifica se está mudando de área e se a nova área tem espaço
+        // Check if moving to a new area and if the new area has space
         if (
           active.data.current?.area &&
           active.data.current.area !== areaId &&
           (droppedItems[areaId]?.length ?? 0) <
             (areas.find((area) => area.id === areaId)?.limit ?? 0)
         ) {
-          // Remover da área de origem e adicionar à nova área
+          // Remove from the source area and add to the new area
           setDroppedItems((prev) => ({
             ...prev,
-            [sourceArea]: prev[sourceArea].filter((item) => item.id !== itemId), // Remove da origem
+            [sourceArea]: prev[sourceArea].filter((item) => item.id !== itemId),
             [areaId]: [
               ...(prev[areaId] || []),
-              { id: itemId, item: String(active.data.current?.item) }, // Adiciona na nova área
+              { id: itemId, item: String(active.data.current?.item) },
             ],
           }));
         } else if (
@@ -121,19 +135,16 @@ export default function Page() {
           (droppedItems[areaId]?.length ?? 0) <
             (areas.find((area) => area.id === areaId)?.limit ?? 0)
         ) {
-          // Se o item for novo (vindo da sidebar), adiciona diretamente à nova área
+          // If the item is new (from the sidebar), add directly to the new area
           setDroppedItems((prev) => ({
             ...prev,
-            [areaId]: [
-              ...(prev[areaId] || []),
-              { id: uuidv4(), item: itemId }, // Adiciona o novo item
-            ],
+            [areaId]: [...(prev[areaId] || []), { id: uuidv4(), item: itemId }],
           }));
         }
       }
     }
 
-    // Limpa o item ativo após o drop
+    // Clear the active item after drop
     setActiveItem(null);
   };
 
@@ -143,12 +154,77 @@ export default function Page() {
     setActiveItem(itemName);
   };
 
+  // Simulated payload
+  const initialPayload = [
+    {
+      turnoId: "manha",
+      date: "2024-09-16",
+      itemId: "0df828ba-4587-457c-a113-9c85d49c12e7",
+      itemName: "Raifran Silva",
+    },
+    {
+      turnoId: "tarde",
+      date: "2024-09-16",
+      itemId: "0df828ba-4587-457c-a113-9c85d49c12e8",
+      itemName: "Raifran Silva",
+    },
+    // ...more items
+  ];
+
+  const processPayload = (
+    payload: {
+      turnoId: string;
+      date: string;
+      itemId: string;
+      itemName: string;
+    }[]
+  ) => {
+    const newDroppedItems: Record<string, { id: string; item: string }[]> = {};
+
+    payload.forEach(({ turnoId, date, itemId, itemName }) => {
+      const areaId = `${turnoId}-${date}`; // Construct the area ID
+      if (!newDroppedItems[areaId]) {
+        newDroppedItems[areaId] = [];
+      }
+      newDroppedItems[areaId].push({
+        id: itemId,
+        item: itemName,
+      });
+    });
+
+    return newDroppedItems;
+  };
+
+  // Process the payload to update droppedItems when dataAtual changes
+  useEffect(() => {
+    const currentWeekDates = diasDaSemana.map(
+      (date) => date.toISOString().split("T")[0]
+    );
+
+    // Filter payload for current week
+    const currentWeekPayload = initialPayload.filter(({ date }) =>
+      currentWeekDates.includes(date)
+    );
+
+    const newDroppedItems = processPayload(currentWeekPayload);
+
+    setDroppedItems(newDroppedItems);
+  }, [dataAtual]);
+
+
   return (
     <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      {/* Header de Itens Draggables */}
+      {/* Header of Draggable Items */}
       <ElementsSidebar />
 
-      {/* Tabela de turnos */}
+      {/* Date Display */}
+      <DateDisplay
+        mensal={false}
+        dataAtual={dataAtual}
+        irParaProximaSemana={irParaProximaSemana}
+        voltarSemana={voltarSemana}
+      />
+      {/* Shifts Table */}
       <Box sx={{ flexGrow: 1, mt: 2 }}>
         <Table>
           <TableHead>
@@ -172,9 +248,9 @@ export default function Page() {
               <TableCell
                 sx={{ border: "1px solid #ccc", backgroundColor: "#f0f0f0" }}
               ></TableCell>
-              {dates.map((date) => (
+              {diasDaSemana.map((date) => (
                 <TableCell
-                  key={date.id}
+                  key={date.toISOString().split("T")[0]}
                   sx={{
                     border: "1px solid #ccc",
                     padding: 0,
@@ -183,7 +259,10 @@ export default function Page() {
                     fontWeight: "bold",
                   }}
                 >
-                  {date.date}
+                  {date.toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                  })}
                 </TableCell>
               ))}
             </TableRow>
@@ -205,43 +284,41 @@ export default function Page() {
                 >
                   {turno.title}
                 </TableCell>
-                {headers
-                  .filter((header) => header.id !== "turno")
-                  .map((header) => {
-                    const area = areas.find(
-                      (area) =>
-                        area.turnoId === turno.id &&
-                        area.diaDaSemana === header.id
-                    );
-                    return (
-                      <TableCell
-                        key={`${turno.id}-${header.id}`}
-                        sx={{ border: "1px solid #ccc", padding: 0, minWidth: "150px" }}
-                      >
-                        {area ? (
-                          <DroppableArea
-                            id={area.id}
-                            items={droppedItems[area.id] || []}
-                            areaId={area.id}
-                            limit={area.limit}
-                            borderColor={turno.color}
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                    );
-                  })}
+                {diasDaSemana.map((date) => {
+                  const areaId = `${turno.id}-${
+                    date.toISOString().split("T")[0]
+                  }`;
+                  const area = areas.find((area) => area.id === areaId);
+                  return (
+                    <TableCell
+                      key={areaId}
+                      sx={{
+                        border: "1px solid #ccc",
+                        padding: 0,
+                        minWidth: "150px",
+                      }}
+                    >
+                      {area ? (
+                        <DroppableArea
+                          id={area.id}
+                          items={droppedItems[area.id] || []}
+                          areaId={area.id}
+                          limit={area.limit}
+                          borderColor={turno.color}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Box>
 
-      {/* Lixeira */}
-      {/* <TrashBin /> */}
-
-      {/* Overlay do item sendo arrastado */}
+      {/* Overlay of the item being dragged */}
       <DragOverlay>
         {activeItem ? (
           <Box
@@ -260,6 +337,8 @@ export default function Page() {
           </Box>
         ) : null}
       </DragOverlay>
+      <pre>{JSON.stringify(droppedItems, null, 2)}</pre>
     </DndContext>
+    
   );
 }

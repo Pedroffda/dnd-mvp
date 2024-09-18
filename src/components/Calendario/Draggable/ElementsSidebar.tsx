@@ -14,7 +14,7 @@ export function ElementsSidebar() {
     // "Viviane Ferreira", "Patricia Silva", "Sandra Mendes", "Luciana Ferreira",
   ]; // Itens disponíveis no header
 
-  const { isOver, setNodeRef } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: 'elements-sidebar', // Identificador da barra lateral
   });
 
