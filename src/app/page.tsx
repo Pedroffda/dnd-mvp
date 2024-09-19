@@ -9,7 +9,7 @@ import {
 import { ElementsSidebar } from "@/components/Calendario/Draggable/ElementsSidebar";
 import { v4 as uuidv4 } from "uuid";
 import { DroppableArea } from "@/components/Calendario/Droppable/DroppableArea";
-
+import { styles } from "./calendarStyles";
 import {
   Box,
   Table,
@@ -62,13 +62,6 @@ export default function Page() {
     diasDaSemana.push(date);
   }
 
-  type Turno = {
-    id: string;
-    title: string;
-    color: string;
-    [key: string]: any; // Allow dynamic properties
-  };
-
   const turnos = [
     {
       id: "2",
@@ -76,7 +69,8 @@ export default function Page() {
       color: "#d9534f",
       inicio: "07:00",
       fim: "13:00",
-      vagas: 2,
+      vagas: 3,
+      sequencia: 1,
       domingo: true,
       segunda: true,
       terca: true,
@@ -92,6 +86,7 @@ export default function Page() {
       inicio: "13:00",
       fim: "19:00",
       vagas: 2,
+      sequencia: 1,
       domingo: true,
       segunda: true,
       terca: true,
@@ -107,6 +102,7 @@ export default function Page() {
       inicio: "19:00",
       fim: "01:00",
       vagas: 1,
+      sequencia: 3,
       domingo: true,
       segunda: true,
       terca: true,
@@ -117,6 +113,8 @@ export default function Page() {
     },
     // Add other shifts as needed
   ];
+
+  turnos.sort((a, b) => a.sequencia - b.sequencia);
 
   const dayOfWeekMap: { [key: number]: string } = {
     0: "domingo",
@@ -205,10 +203,8 @@ export default function Page() {
               ...(prev[areaId] || []),
               {
                 id: itemId,
-                // item: String(active.data.current?.item)
                 item: itemName,
                 uId: uId,
-                // userId: itemId,
               },
             ],
           }));
@@ -223,9 +219,7 @@ export default function Page() {
             [areaId]: [
               ...(prev[areaId] || []),
               {
-                // id: uuidv4(),
                 id: itemId,
-                // userId: itemId,
                 item: itemName,
                 uId: uuidv4(),
               },
@@ -253,13 +247,13 @@ export default function Page() {
     itemName: string;
     uId: string;
   }[] = [
-    {
-      turnoId: "1",
-      date: "2024-09-16",
-      itemId: "0df828ba-4587-457c-a113-9c85d49c12e7",
-      itemName: "Raifran Silva",
-      uId: "some-unique-id-1",
-    },
+    // {
+    //   turnoId: "1",
+    //   date: "2024-09-16",
+    //   itemId: "0df828ba-4587-457c-a113-9c85d49c12e7",
+    //   itemName: "Raifran Silva",
+    //   uId: "some-unique-id-1",
+    // },
   ];
 
   const processPayload = (
@@ -325,34 +319,17 @@ export default function Page() {
           <TableHead>
             <TableRow>
               {headers.map((header) => (
-                <TableCell
-                  key={header.id}
-                  sx={{
-                    border: "1px solid #ccc",
-                    padding: 2,
-                    backgroundColor: "#f9f9f9",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}
-                >
+                <TableCell key={header.id} sx={styles.headerTableCell}>
                   {header.title}
                 </TableCell>
               ))}
             </TableRow>
             <TableRow>
-              <TableCell
-                sx={{ border: "1px solid #ccc", backgroundColor: "#f0f0f0" }}
-              ></TableCell>
+              <TableCell sx={styles.weekdayTableCell}></TableCell>
               {diasDaSemana.map((date) => (
                 <TableCell
                   key={date.toISOString().split("T")[0]}
-                  sx={{
-                    border: "1px solid #ccc",
-                    padding: 0,
-                    backgroundColor: "#f0f0f0",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}
+                  sx={styles.weekdayTableCell}
                 >
                   {date.toLocaleDateString("pt-BR", {
                     day: "2-digit",
@@ -365,28 +342,9 @@ export default function Page() {
           <TableBody>
             {turnos.map((turno) => (
               <TableRow key={turno.id}>
-                <TableCell
-                  sx={{
-                    border: "1px solid #ccc",
-                    padding: 2,
-                    borderLeft: `5px solid ${turno.color}`,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    // maxWidth: "100px",
-                  }}
-                >
+                <TableCell sx={styles.turnoTableCell}>
                   {turno.title}
-                  <Box
-                    sx={{
-                      padding: 0,
-
-                      fontSize: 12,
-                      color: "#777",
-                      fontWeight: "normal",
-                    }}
-                  >
+                  <Box sx={styles.timeTableCell}>
                     {`${turno.inicio} - ${turno.fim}`}
                   </Box>
                 </TableCell>
@@ -400,9 +358,7 @@ export default function Page() {
                     <TableCell
                       key={areaId}
                       sx={{
-                        border: "1px solid #ccc",
-                        padding: 0,
-                        minWidth: "150px",
+                        ...styles.areaTableCell,
                         backgroundColor: isAvailable ? "inherit" : "#f5f5f5",
                       }}
                     >
@@ -415,15 +371,7 @@ export default function Page() {
                           borderColor={turno.color}
                         />
                       ) : (
-                        <Box
-                          sx={{
-                            color: "#aaa",
-                            pointerEvents: "none",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
+                        <Box sx={styles.indisponivelBox}>
                           {/* You can display a message or icon here */}
                           Indisponível
                         </Box>
@@ -439,22 +387,7 @@ export default function Page() {
 
       {/* Overlay of the item being dragged */}
       <DragOverlay>
-        {activeItem ? (
-          <Box
-            sx={{
-              padding: 2,
-              width: "200px",
-              backgroundColor: "white",
-              border: "1px solid #ccc",
-              boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
-              alignItems: "center",
-              justifyContent: "center",
-              display: "flex",
-            }}
-          >
-            {activeItem}
-          </Box>
-        ) : null}
+        {activeItem ? <Box sx={styles.overlayBox}>{activeItem}</Box> : null}
       </DragOverlay>
       <pre>{JSON.stringify(droppedItems, null, 2)}</pre>
     </DndContext>

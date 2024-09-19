@@ -79,7 +79,8 @@ export default function DateDisplay({
           alignItems: "center",
           padding: 2,
           mt: 2,
-          backgroundColor: "#f0f0f0",
+          // backgroundColor: "#f0f0f0",
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
         }}
       >
         <Button
