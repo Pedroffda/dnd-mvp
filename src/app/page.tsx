@@ -209,6 +209,7 @@ export default function Page() {
             ],
           }));
         } else if (
+          // Check if the item is new (from the sidebar) and if the new area has space
           !active.data.current?.area &&
           (droppedItems[areaId]?.length ?? 0) <
             (areas.find((area) => area.id === areaId)?.limit ?? 0)
@@ -219,9 +220,9 @@ export default function Page() {
             [areaId]: [
               ...(prev[areaId] || []),
               {
-                id: itemId,
+                id: uuidv4(),
                 item: itemName,
-                uId: uuidv4(),
+                uId: itemId,
               },
             ],
           }));
