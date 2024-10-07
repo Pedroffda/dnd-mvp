@@ -1,6 +1,6 @@
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { Box, Card } from "@mui/material";
-import { DraggableBar } from "./Calendario/Draggable/DraggableBar";
+import { DraggableBar } from "./Calendar/Draggable/DraggableBar";
 import DateDisplay from "./DateDisplay";
 import ShiftsTable from "./ShiftsTable";
 import { styles } from "./styles";

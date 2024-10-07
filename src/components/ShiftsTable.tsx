@@ -6,7 +6,7 @@ import {
   TableBody,
   Box,
 } from "@mui/material";
-import { DroppableArea } from "./Calendario/Droppable/DroppableArea";
+import { DroppableArea } from "./Calendar/Droppable/DroppableArea";
 import { styles } from "./styles";
 
 interface ShiftsTableProps {

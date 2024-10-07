@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { DraggableBar } from "@/components/Calendario/Draggable/DraggableBar";
+import { DraggableBar } from "@/components/Calendar/Draggable/DraggableBar";
 import { expect, userEvent, within } from "@storybook/test";
 import { DndContext, DragOverlay } from "@dnd-kit/core"; // Importando o DndContext
 import { useState } from "react";

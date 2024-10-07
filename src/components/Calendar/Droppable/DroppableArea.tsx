@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { DraggableItem } from "@/components/Calendario/Draggable/DraggableItem";
+import { DraggableItem } from "@/components/Calendar/Draggable/DraggableItem";
 import { Droppable } from ".";
 import { Box } from "@mui/material"; // Importando o Box do Material-UI
 
