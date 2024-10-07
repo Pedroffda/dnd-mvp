@@ -1,0 +1,86 @@
+import Image from "next/image";
+
+export const RightArrow = () => (
+  <svg 
+    viewBox="0 0 14 14" 
+    width="8px" 
+    height="14px" 
+    style={{ 
+      marginLeft: '4px',
+      display: 'inline-block',
+      shapeRendering: 'inherit',
+      verticalAlign: 'middle',
+      fill: 'currentColor',
+      'path fill': 'currentColor'
+    }}
+  >
+    <path d="m11.1 7.35-5.5 5.5a.5.5 0 0 1-.7-.7L10.04 7 4.9 1.85a.5.5 0 1 1 .7-.7l5.5 5.5c.2.2.2.5 0 .7Z" />
+  </svg>
+);
+
+<div className="dnd-container">
+  <div className='dnd-section-title'>
+    # Configure your DnD Calendar
+
+    Below are the steps to configure your DnD (drag and drop) calendar. 
+  </div>
+  <div className="dnd-section">
+    <div className="dnd-section-item">
+      <h4 className="dnd-section-item-heading">Add Drag and Drop Functionality</h4>
+      <p className="dnd-section-item-paragraph">
+        Integrate drag and drop functionality into your calendar by using `react-dnd`. 
+        Make sure to include the necessary dependencies and wrap your components correctly.
+      </p>
+      <a href="https://react-dnd.github.io/react-dnd/about" target="_blank">
+        Learn more about React DnD <RightArrow />
+      </a>
+    </div>
+    <div className="dnd-section-item">
+      <h4 className="dnd-section-item-heading">Manage Calendar Events</h4>
+      <p className="dnd-section-item-paragraph">
+        Dragging and dropping events within the calendar requires event handlers that listen for the drag and drop operations.
+        Ensure your calendar supports dynamic event rendering.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  {`
+  .dnd-container {
+    margin-bottom: 48px;
+  }
+
+  .dnd-section {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .dnd-section-title {
+    margin-bottom: 32px;
+  }
+
+  .dnd-section-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dnd-section-item-heading {
+    padding-top: 20px !important;
+    padding-bottom: 5px !important;
+    margin: 0 !important;
+  }
+
+  .dnd-section-item-paragraph {
+    margin: 0;
+    padding-bottom: 10px;
+  }
+
+  .dnd-section a:not(h1 a, h2 a, h3 a) {
+    font-size: 14px;
+  }
+  `}
+</style>

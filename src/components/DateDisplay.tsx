@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Typography, Button } from "@mui/material";
+import { Typography, Button, Grid2 } from "@mui/material";
 
 interface DateDisplayProps {
   mensal?: boolean;
@@ -49,8 +49,6 @@ export default function DateDisplay({
 
     const formatarMes = (dataFormatada: string) => {
       return dataFormatada.replace(
-        // /(\d+\s+de\s+)([a-z]+)/i,
-        // verificar caracteres especiais e acentos
         /(\d+\s+de\s+)([a-záéíóúàèìòùâêîôûãõç]+)/i,
         (match, diaEDe, mes) => `${diaEDe}${mes.slice(0, 3).toUpperCase()}`
       );
@@ -71,46 +69,38 @@ export default function DateDisplay({
   };
 
   return (
-    <div>
-      <Card
+    <Grid2
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Button
+        variant="text"
+        onClick={mensal ? voltarMes : voltarSemana}
+        disabled={!voltarSemana && !voltarMes}
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 2,
-          mt: 2,
-          // backgroundColor: "#f0f0f0",
-          boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+          fontWeight: "bold",
+          fontSize: 20,
         }}
       >
-        <Button
-          variant="text"
-          onClick={mensal ? voltarMes : voltarSemana}
-          disabled={!voltarSemana && !voltarMes}
-          sx={{
-            fontWeight: "bold",
-            fontSize: 20,
-          }}
-        >
-          {"<"}
-        </Button>
-        <Typography variant="h6">
-          {mensal
-            ? `${formatarMes(dataAtual)}`
-            : `${formatarSemana(dataAtual)}`}
-        </Typography>
-        <Button
-          variant="text"
-          onClick={mensal ? irParaProximoMes : irParaProximaSemana}
-          disabled={!irParaProximaSemana && !irParaProximoMes}
-          sx={{
-            fontWeight: "bold",
-            fontSize: 20,
-          }}
-        >
-          {">"}
-        </Button>
-      </Card>
-    </div>
+        {"<"}
+      </Button>
+      <Typography variant="h6">
+        {mensal ? `${formatarMes(dataAtual)}` : `${formatarSemana(dataAtual)}`}
+      </Typography>
+      <Button
+        variant="text"
+        onClick={mensal ? irParaProximoMes : irParaProximaSemana}
+        disabled={!irParaProximaSemana && !irParaProximoMes}
+        sx={{
+          fontWeight: "bold",
+          fontSize: 20,
+        }}
+      >
+        {">"}
+      </Button>
+    </Grid2>
   );
 }

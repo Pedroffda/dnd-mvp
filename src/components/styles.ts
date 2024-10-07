@@ -1,0 +1,52 @@
+export const styles = {
+  areaTableCell: {
+    border: "1px solid #ccc ",
+    minWidth: "150px",
+    padding: 0,
+  },
+  headerTableCell: {
+    backgroundColor: "#f9f9f9",
+    border: "1px solid #ccc",
+    fontWeight: "bold",
+    padding: 0,
+    textAlign: "center",
+  },
+  indisponivelBox: {
+    alignItems: "center",
+    color: "#aaa",
+    display: "flex",
+    justifyContent: "center",
+    pointerEvents: "none",
+  },
+  overlayBox: {
+    alignItems: "center",
+    backgroundColor: "white",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+    display: "flex",
+    justifyContent: "center",
+    padding: 1,
+    width: "150px",
+  },
+  timeTableCell: {
+    color: "#777",
+    fontSize: 12,
+    fontWeight: "normal",
+    padding: 0,
+  },
+  turnoTableCell: {
+    backgroundColor: "#f9f9f9",
+    border: "1px solid #ccc",
+    fontWeight: "bold",
+    padding: 0,
+    textAlign: "center",
+  },
+  weekdayTableCell: {
+    backgroundColor: "#f0f0f0",
+    border: "1px solid #ccc",
+    fontWeight: "bold",
+    padding: 0,
+    textAlign: "center",
+  },
+};
