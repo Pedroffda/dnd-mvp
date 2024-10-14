@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Table,
   TableHead,
@@ -21,9 +22,9 @@ interface ShiftsTableProps {
   }>;
   areas: Array<{ id: string; limit: number }>;
   droppedItems: { [key: string]: { id: string; item: string; uId: string }[] };
-  modoMes: boolean; // Adicionando a propriedade modoMes
+  modoMes: boolean;
+  dataAtual: Date;
 }
-
 
 const ShiftsTable = ({
   headers,
@@ -32,6 +33,7 @@ const ShiftsTable = ({
   areas,
   droppedItems,
   modoMes,
+  dataAtual,
 }: Readonly<ShiftsTableProps>) => {
   // Função para agrupar as datas em semanas
   const agruparSemanas = (datas: Date[]) => {
@@ -53,35 +55,68 @@ const ShiftsTable = ({
   // Agrupamos as datas em semanas se estamos no modo mensal
   const semanas = modoMes ? agruparSemanas(diasDaSemana) : [diasDaSemana];
 
-    // Nomes dos dias da semana
-    const dayNames = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+  // Nomes dos dias da semana
+  const dayNames = [
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+    "Domingo",
+  ];
 
   return (
-    <>
-      {/* Renderização da tabela de turnos e áreas */}
-      {semanas.map((semana, index) => (
-        <Table key={index} role="grid" aria-label={`Semana ${index + 1}`}>
+    <Table>
+      {/* Renderização do cabeçalho dos dias da semana */}
+      <TableHead>
+        <TableRow>
+          <TableCell
+            key="turno"
+            sx={{
+              ...styles.headerTableCell,
+              border: "none",
+              backgroundColor: "transparent",
+            }}
+          ></TableCell>
+          {dayNames.map((dayName, index) => (
+            <TableCell key={index} sx={styles.headerTableCell}>
+              {dayName}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      {semanas.map((semana, indexSemana) => (
+        <React.Fragment key={indexSemana}>
           <TableHead>
             <TableRow>
-              
               <TableCell key="turno" sx={styles.headerTableCell}></TableCell>
-              {semana.map((date) => (
-                <TableCell
-                  key={date.toISOString().split("T")[0]}
-                  sx={styles.headerTableCell}
-                >
-                  {date.toLocaleDateString("pt-BR", {
-                    // weekday: "short",
-                    day: "numeric",
-                    month: "numeric",
-                  })}
-                </TableCell>
-              ))}
+              {semana.map((date) => {
+                // Determinar se o dia pertence ao mês atual apenas no modo mensal
+                const isCurrentMonth = modoMes
+                ? date.getMonth() === dataAtual.getMonth()
+                : true;
+                return (
+                  <TableCell
+                    key={date.toISOString().split("T")[0]}
+                    sx={{
+                      ...styles.headerTableCell,
+                      backgroundColor: isCurrentMonth ? "inherit" : "#f0f0f0",
+                      color: isCurrentMonth ? "inherit" : "#aaa",
+                    }}
+                  >
+                    {date.toLocaleDateString("pt-BR", {
+                      day: "numeric",
+                      month: "numeric",
+                    })}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </TableHead>
           <TableBody>
             {turnos.map((turno) => (
-              <TableRow key={turno.id}>
+              <TableRow key={`${turno.id}-semana-${indexSemana}`}>
                 {/* Renderização da célula do turno */}
                 <TableCell
                   sx={{
@@ -105,27 +140,44 @@ const ShiftsTable = ({
                 </TableCell>
                 {/* Renderização das células dos dias */}
                 {semana.map((date) => {
-                  const areaId = `${turno.id}-${date.toISOString().split("T")[0]}`;
+                  const areaId = `${turno.id}-${
+                    date.toISOString().split("T")[0]
+                  }`;
                   const area = areas.find((area) => area.id === areaId);
                   const isAvailable = area !== undefined;
+                  // Determinar se o dia pertence ao mês atual apenas no modo mensal
+                  const isCurrentMonth = modoMes
+                    ? date.getMonth() === dataAtual.getMonth()
+                    : true;
+                  // Determinar se a célula deve ser interativa
+                  const isSelectable = isAvailable && isCurrentMonth;
                   return (
                     <TableCell
                       key={areaId}
                       sx={{
                         ...styles.areaTableCell,
-                        backgroundColor: isAvailable ? "inherit" : "#f5f5f5",
+                        backgroundColor: isAvailable
+                          ? isCurrentMonth
+                            ? "inherit"
+                            : "#f0f0f0" // Cor para dias de outros meses
+                          : "#f5f5f5",
+                        pointerEvents: isSelectable ? "auto" : "none", // Desabilita interação se não for selecionável
+                        opacity: isSelectable ? 1 : 0.5, // Reduz opacidade para dias não selecionáveis
                       }}
                     >
-                      {isAvailable ? (
+                      {isAvailable && isCurrentMonth ? (
                         <DroppableArea
                           id={area.id}
                           items={droppedItems[area.id] || []}
                           areaId={area.id}
                           limit={area.limit}
                           borderColor={turno.color}
+                          // disabled={!isCurrentMonth}
                         />
                       ) : (
-                        <Box sx={styles.indisponivelBox}>Indisponível</Box>
+                        <Box sx={styles.indisponivelBox}>
+                          {isCurrentMonth ? "Indisponível" : ""}
+                        </Box>
                       )}
                     </TableCell>
                   );
@@ -133,12 +185,9 @@ const ShiftsTable = ({
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </React.Fragment>
       ))}
-      {/* <pre>{JSON.stringify(droppedItems, null, 2)}</pre> */}
-      {/* <pre>{JSON.stringify(areas, null, 2)}</pre> */}
-      {/* <pre>{JSON.stringify(semanas, null, 2)}</pre> */}
-    </>
+    </Table>
   );
 };
 

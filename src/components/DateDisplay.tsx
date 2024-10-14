@@ -65,7 +65,8 @@ export default function DateDisplay({
       month: "long",
       year: "numeric",
     });
-    return formatadorMes.format(date);
+    // so a primeira letra do mes em maiusculo    
+    return formatadorMes.format(date).replace(/^\w/, (c) => c.toUpperCase());
   };
 
   return (

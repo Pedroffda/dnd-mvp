@@ -93,6 +93,7 @@ const CalendarLayout = ({
           areas={areas}
           droppedItems={droppedItems}
           modoMes={modoMes} // Alterna o modo mês
+          dataAtual={dataAtual}
         />
       </Box>
 

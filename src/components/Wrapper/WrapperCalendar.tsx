@@ -33,29 +33,6 @@ export default function WrapperCalendar() {
     });
   };
 
-  const getSemanasDoMes = (date: Date) => {
-    const primeiroDia = new Date(date.getFullYear(), date.getMonth(), 1);
-    const ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    const semanas = [];
-
-    // Itera sobre os dias do mês
-    let diaAtual = new Date(primeiroDia);
-    while (diaAtual <= ultimoDia) {
-      const inicioSemana = new Date(diaAtual);
-      const fimSemana = new Date(diaAtual);
-
-      // Move para o próximo domingo
-      while (diaAtual.getDay() !== 0 && diaAtual <= ultimoDia) {
-        diaAtual.setDate(diaAtual.getDate() + 1);
-      }
-      // Armazena as semanas
-      semanas.push({ inicio: inicioSemana, fim: new Date(diaAtual) });
-      // Move para o próximo dia
-      diaAtual.setDate(diaAtual.getDate() + 1);
-    }
-    return semanas;
-  };
-
   const alternarModo = () => {
     setModoMes((prevModo) => !prevModo);
   };
@@ -105,14 +82,6 @@ export default function WrapperCalendar() {
     6: "sabado",
   };
 
-  // const headers = [
-  //   { id: "turno", title: "Turno" },
-  //   ...diasDaSemana.map((date) => ({
-  //     id: date.toISOString().split("T")[0], // Use ISO date string as id
-  //     title: date.toLocaleDateString("pt-BR", { weekday: "long" }),
-  //   })),
-  // ];
-
   const headers = [
     { id: "turno", title: "Turno" },
     ...diasCalendario.map((date) => ({
@@ -150,36 +119,7 @@ export default function WrapperCalendar() {
       }
     }
   }
-  
 
-  // Generate areas based on shifts and dates
-  // const areas: {
-  //   id: string;
-  //   uId: string;
-  //   turnoId: string;
-  //   date: Date;
-  //   limit: number;
-  // }[] = [];
-
-  // for (const turno of turnos) {
-  //   for (const date of diasDaSemana) {
-  //     const dayIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-  //     const dayName = dayOfWeekMap[dayIndex];
-
-  //     // Check if the turno is available on this day
-  //     if (turno[dayName as keyof typeof turno]) {
-  //       const areaId = `${turno.id}-${date.toISOString().split("T")[0]}`;
-  //       areas.push({
-  //         id: areaId,
-  //         turnoId: turno.id,
-  //         date: date,
-  //         limit: turno.vagas || 2,
-  //         uId: "",
-  //       });
-  //     }
-  //   }
-  // }
-  
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -303,33 +243,6 @@ export default function WrapperCalendar() {
     return newDroppedItems;
   };
 
-
-// useEffect(() => {
-//   if (modoMes) {
-//     // Gerar datas para o mês inteiro
-//     const ano = dataAtual.getFullYear();
-//     const mes = dataAtual.getMonth();
-//     const primeiroDiaDoMes = new Date(ano, mes, 1);
-//     const ultimoDiaDoMes = new Date(ano, mes + 1, 0);
-//     const totalDias = ultimoDiaDoMes.getDate();
-
-//     const dias: Date[] = [];
-//     for (let i = 1; i <= totalDias; i++) {
-//       dias.push(new Date(ano, mes, i));
-//     }
-//     setDiasCalendario(dias);
-//   } else {
-//     // Gerar datas para a semana atual
-//     const inicioSemana = getInicioSemana(dataAtual);
-//     const dias: Date[] = [];
-//     for (let i = 0; i < 7; i++) {
-//       const date = new Date(inicioSemana);
-//       date.setDate(inicioSemana.getDate() + i);
-//       dias.push(date);
-//     }
-//     setDiasCalendario(dias);
-//   }
-// }, [dataAtual, modoMes]);
 useEffect(() => {
   const datas: Date[] = [];
 
@@ -375,21 +288,6 @@ useEffect(() => {
 
   setDiasCalendario(datas);
 }, [dataAtual, modoMes]);
-
-
-// const headers = [
-//   { id: "turno", title: "Turno" },
-//   ...diasCalendario.map((date) => ({
-//     id: date.toISOString().split("T")[0],
-//     title: date.toLocaleDateString("pt-BR", {
-//       weekday: "short",
-//       day: "numeric",
-//       month: "numeric",
-//     }),
-//   })),
-// ];
-
-
 
   // Process the payload to update droppedItems when dataAtual changes
   useEffect(() => {
@@ -437,14 +335,12 @@ useEffect(() => {
         voltarSemana={voltarSemana}
         activeItem={activeItem || { id: "", item: "", uId: "" }}
         headers={headers}
-        // modoMes={true} // Passa a prop para alternar entre mês e semana
         modoMes={modoMes}
         irParaProximoMes={irParaProximoMes}
         voltarMes={voltarMes}
-        // alternarModo={alternarModo}
       />
-      {/* <pre>{JSON.stringify(droppedItems, null, 2)}</pre> */}
-      <pre>{JSON.stringify(headers, null, 2)}</pre>
+      <pre>{JSON.stringify(droppedItems, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(headers, null, 2)}</pre> */}
       {/* <pre>{JSON.stringify(areas, null, 2)}</pre>  */}
       {/* <pre>{JSON.stringify(diasC
       alendario, null, 2)}</pre> */}
