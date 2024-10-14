@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { DraggableItem } from "@/components/Calendar/Draggable/DraggableItem";
-import { Droppable } from ".";
 import { Box } from "@mui/material"; // Importando o Box do Material-UI
+import { useDroppable } from "@dnd-kit/core";
 
 interface DroppableAreaProps {
   id: string;
@@ -13,11 +13,11 @@ interface DroppableAreaProps {
 }
 
 const styles = {
-  border: "1px solid #e0e0e0",
+  // border: "1px solid #e0e0e0",
+  // backgroundColor: "red",
   minHeight: "30px",
-  padding: "8px",
+  padding: "1px",
   textAlign: "center",
-  backgroundColor: "#fefefe",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -29,17 +29,23 @@ export function DroppableArea({
   areaId,
   limit = 1,
   borderColor = "#ddd",
-}: DroppableAreaProps) {
+}: Readonly<DroppableAreaProps>) {
+
+    const { isOver, setNodeRef } = useDroppable({
+      id, // Cada área de dropagem tem um ID único
+    });
+
   return (
-    <Droppable id={id}>
       <Box display="flex" flexDirection="column">
         {[...Array(limit)].map((_, index) => (
           <Box
+          ref={setNodeRef} // Define a referência do `droppable`
             key={`${id}-${index}`}
             sx={{
               ...styles,
               borderLeft: items[index] ? `5px solid ${borderColor}` : "none",
               fontWeight: items[index] ? "bold" : "normal",
+              backgroundColor: isOver ? "#f0f0f0" : "#fefefe",
             }}
             onClick={
               () => alert(`Clicou na área ${areaId} (em construção) [adicionar form]`) 
@@ -59,6 +65,5 @@ export function DroppableArea({
           </Box>
         ))}
       </Box>
-    </Droppable>
   );
 }

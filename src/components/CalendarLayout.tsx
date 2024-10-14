@@ -1,4 +1,4 @@
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import { closestCenter, DndContext, DragOverlay } from "@dnd-kit/core";
 import { Box, Card } from "@mui/material";
 import { DraggableBar } from "./Calendar/Draggable/DraggableBar";
 import DateDisplay from "./DateDisplay";
@@ -8,7 +8,9 @@ import { styles } from "./styles";
 interface CalendarLayoutProps {
   dataAtual: Date;
   irParaProximaSemana: () => void;
+  irParaProximoMes: () => void;
   voltarSemana: () => void;
+  voltarMes: () => void;
   headers: { id: string; title: string }[];
   diasDaSemana: Date[];
   turnos: {
@@ -23,12 +25,15 @@ interface CalendarLayoutProps {
   onDragStart: (event: any) => void;
   onDragEnd: (event: any) => void;
   activeItem: { id: string; item: string; uId: string };
+  modoMes: boolean; // Adicione a prop para alternar entre mês e semana
 }
 
 const CalendarLayout = ({
   dataAtual,
   irParaProximaSemana,
+  irParaProximoMes,
   voltarSemana,
+  voltarMes,
   headers,
   diasDaSemana,
   turnos,
@@ -37,10 +42,14 @@ const CalendarLayout = ({
   onDragStart,
   onDragEnd,
   activeItem,
+  modoMes,
 }: Readonly<CalendarLayoutProps>) => {
   return (
-    <DndContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      {/* Draggable Sidebar */}
+    <DndContext
+      onDragEnd={onDragEnd}
+      onDragStart={onDragStart}
+      collisionDetection={closestCenter}
+    >
       <Card
         sx={{
           boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
@@ -57,7 +66,6 @@ const CalendarLayout = ({
         />
       </Card>
 
-      {/* Date Display and Shifts Table */}
       <Box
         sx={{
           flexGrow: 1,
@@ -73,24 +81,21 @@ const CalendarLayout = ({
           dataAtual={dataAtual}
           irParaProximaSemana={irParaProximaSemana}
           voltarSemana={voltarSemana}
+          irParaProximoMes={irParaProximoMes}
+          voltarMes={voltarMes}
+          mensal={modoMes} // Adicione a prop para alternar entre mês e semana
         />
 
         <ShiftsTable
           headers={headers}
-          diasDaSemana={diasDaSemana.map((date) => new Date(date))}
-          turnos={turnos.map((turno) => ({
-            id: turno.id,
-            title: turno.title,
-            inicio: turno.inicio,
-            fim: turno.fim,
-            color: turno.color,
-          }))}
+          diasDaSemana={diasDaSemana}
+          turnos={turnos}
           areas={areas}
           droppedItems={droppedItems}
+          modoMes={modoMes} // Alterna o modo mês
         />
       </Box>
 
-      {/* Overlay for Active Item */}
       <DragOverlay>
         {activeItem ? (
           <Box sx={styles.overlayBox}>{activeItem.item}</Box>

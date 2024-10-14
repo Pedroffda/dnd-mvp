@@ -22,13 +22,18 @@ export function DraggableItem({ id, item, area, uId }: DraggableItemProps) {
       {...attributes}
       {...listeners}
       sx={{
-        padding: "5px",
+        // padding: "5px",
         width: "100%",
-        backgroundColor: isDragging ? "lightblue" : "white", 
+        backgroundColor: isDragging ? "lightblue" : "", 
         boxShadow: isDragging ? "0px 4px 12px rgba(0,0,0,0.2)" : "none",
         border: isDragging ? "1px solid lightblue" : "",
         cursor: "grab",
         fontWeight: "bold",
+        "&:hover": {
+          backgroundColor: "lightblue",
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+          border: "1px solid lightblue",
+        },
       }}
     >
       {item} 

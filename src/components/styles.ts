@@ -1,7 +1,7 @@
 export const styles = {
   areaTableCell: {
     border: "1px solid #ccc ",
-    minWidth: "150px",
+    minWidth: "100px",
     padding: 0,
   },
   headerTableCell: {
@@ -27,7 +27,7 @@ export const styles = {
     display: "flex",
     justifyContent: "center",
     padding: 1,
-    width: "150px",
+    width: "100px",
   },
   timeTableCell: {
     color: "#777",
