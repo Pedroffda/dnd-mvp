@@ -22,7 +22,7 @@ interface ShiftsTableProps {
   }>;
   areas: Array<{ id: string; limit: number }>;
   droppedItems: { [key: string]: { id: string; item: string; uId: string }[] };
-  modoMes: boolean;
+  modo: "diario" | "semanal" | "mensal";
   dataAtual: Date;
 }
 
@@ -32,7 +32,7 @@ const ShiftsTable = ({
   turnos,
   areas,
   droppedItems,
-  modoMes,
+  modo,
   dataAtual,
 }: Readonly<ShiftsTableProps>) => {
   // Função para agrupar as datas em semanas
@@ -53,18 +53,8 @@ const ShiftsTable = ({
   };
 
   // Agrupamos as datas em semanas se estamos no modo mensal
-  const semanas = modoMes ? agruparSemanas(diasDaSemana) : [diasDaSemana];
-
-  // Nomes dos dias da semana
-  const dayNames = [
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-    "Domingo",
-  ];
+  const semanas =
+    modo === "mensal" ? agruparSemanas(diasDaSemana) : [diasDaSemana];
 
   return (
     <Table>
@@ -79,11 +69,16 @@ const ShiftsTable = ({
               backgroundColor: "transparent",
             }}
           ></TableCell>
-          {dayNames.map((dayName, index) => (
-            <TableCell key={index} sx={styles.headerTableCell}>
-              {dayName}
-            </TableCell>
-          ))}
+          {semanas[0].map((date) => {
+            const dayName = date.toLocaleDateString("pt-BR", {
+              weekday: "long",
+            });
+            return (
+              <TableCell key={date.toISOString()} sx={styles.headerTableCell}>
+                {dayName.charAt(0).toUpperCase() + dayName.slice(1)}
+              </TableCell>
+            );
+          })}
         </TableRow>
       </TableHead>
       {semanas.map((semana, indexSemana) => (
@@ -93,9 +88,10 @@ const ShiftsTable = ({
               <TableCell key="turno" sx={styles.headerTableCell}></TableCell>
               {semana.map((date) => {
                 // Determinar se o dia pertence ao mês atual apenas no modo mensal
-                const isCurrentMonth = modoMes
-                ? date.getMonth() === dataAtual.getMonth()
-                : true;
+                const isCurrentMonth =
+                  modo === "mensal"
+                    ? date.getMonth() === dataAtual.getMonth()
+                    : true;
                 return (
                   <TableCell
                     key={date.toISOString().split("T")[0]}
@@ -140,15 +136,16 @@ const ShiftsTable = ({
                 </TableCell>
                 {/* Renderização das células dos dias */}
                 {semana.map((date) => {
-                  const areaId = `${turno.id}-${
-                    date.toISOString().split("T")[0]
-                  }`;
+                  const areaId = `${turno.id}-${date
+                    .toISOString()
+                    .split("T")[0]}`;
                   const area = areas.find((area) => area.id === areaId);
                   const isAvailable = area !== undefined;
                   // Determinar se o dia pertence ao mês atual apenas no modo mensal
-                  const isCurrentMonth = modoMes
-                    ? date.getMonth() === dataAtual.getMonth()
-                    : true;
+                  const isCurrentMonth =
+                    modo === "mensal"
+                      ? date.getMonth() === dataAtual.getMonth()
+                      : true;
                   // Determinar se a célula deve ser interativa
                   const isSelectable = isAvailable && isCurrentMonth;
                   return (
@@ -172,7 +169,6 @@ const ShiftsTable = ({
                           areaId={area.id}
                           limit={area.limit}
                           borderColor={turno.color}
-                          // disabled={!isCurrentMonth}
                         />
                       ) : (
                         <Box sx={styles.indisponivelBox}>

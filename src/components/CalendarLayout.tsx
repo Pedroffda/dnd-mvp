@@ -25,7 +25,9 @@ interface CalendarLayoutProps {
   onDragStart: (event: any) => void;
   onDragEnd: (event: any) => void;
   activeItem: { id: string; item: string; uId: string };
-  modoMes: boolean; // Adicione a prop para alternar entre mês e semana
+  modo: "diario" | "semanal" | "mensal"; 
+  irParaProximoDia?: () => void;
+  voltarDia?: () => void;
 }
 
 const CalendarLayout = ({
@@ -34,6 +36,8 @@ const CalendarLayout = ({
   irParaProximoMes,
   voltarSemana,
   voltarMes,
+  irParaProximoDia,
+  voltarDia,
   headers,
   diasDaSemana,
   turnos,
@@ -42,7 +46,7 @@ const CalendarLayout = ({
   onDragStart,
   onDragEnd,
   activeItem,
-  modoMes,
+  modo,
 }: Readonly<CalendarLayoutProps>) => {
   return (
     <DndContext
@@ -83,7 +87,9 @@ const CalendarLayout = ({
           voltarSemana={voltarSemana}
           irParaProximoMes={irParaProximoMes}
           voltarMes={voltarMes}
-          mensal={modoMes} // Adicione a prop para alternar entre mês e semana
+          modo={modo} // Adicione a prop para alternar entre mês e semana
+          irParaProximoDia={irParaProximoDia}
+          voltarDia={voltarDia}
         />
 
         <ShiftsTable
@@ -92,7 +98,7 @@ const CalendarLayout = ({
           turnos={turnos}
           areas={areas}
           droppedItems={droppedItems}
-          modoMes={modoMes} // Alterna o modo mês
+          modo={modo} // Alterna o modo mês
           dataAtual={dataAtual}
         />
       </Box>

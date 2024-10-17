@@ -16,7 +16,7 @@ export default function WrapperCalendar() {
   } | null>(null);
 
   const [dataAtual, setDataAtual] = useState(new Date());
-  const [modoMes, setModoMes] = useState(false);
+  const [modo, setModo] = useState<"diario" | "semanal" | "mensal">("semanal"); // Atualizado
   const [diasCalendario, setDiasCalendario] = useState<Date[]>([]);
 
   const irParaProximoMes = () => {
@@ -34,7 +34,11 @@ export default function WrapperCalendar() {
   };
 
   const alternarModo = () => {
-    setModoMes((prevModo) => !prevModo);
+      setModo((prevModo) => {
+          if (prevModo === "diario") return "semanal";
+          if (prevModo === "semanal") return "mensal";
+          return "diario";
+      });
   };
 
   const getInicioSemana = (date: Date) => {
@@ -57,6 +61,22 @@ export default function WrapperCalendar() {
     setDataAtual((prevDate) => {
       const novaData = new Date(prevDate);
       novaData.setDate(novaData.getDate() - 7);
+      return novaData;
+    });
+  };
+
+  const irParaProximoDia = () => {
+    setDataAtual((prevDate) => {
+      const novaData = new Date(prevDate);
+      novaData.setDate(novaData.getDate() + 1);
+      return novaData;
+    });
+  };
+
+  const voltarDia = () => {
+    setDataAtual((prevDate) => {
+      const novaData = new Date(prevDate);
+      novaData.setDate(novaData.getDate() - 1);
       return novaData;
     });
   };
@@ -243,52 +263,51 @@ export default function WrapperCalendar() {
     return newDroppedItems;
   };
 
-useEffect(() => {
-  const datas: Date[] = [];
+  useEffect(() => {
+    const datas: Date[] = [];
 
-  if (modoMes) {
-    const ano = dataAtual.getFullYear();
-    const mes = dataAtual.getMonth();
+    if (modo === "mensal") {
+      const ano = dataAtual.getFullYear();
+      const mes = dataAtual.getMonth();
 
-    // Obter o primeiro dia do mês
-    const primeiroDiaDoMes = new Date(ano, mes, 1);
-    // Obter o dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
-    let diaSemanaPrimeiroDia = primeiroDiaDoMes.getDay();
-    // Ajustar para que segunda-feira seja 0
-    diaSemanaPrimeiroDia = (diaSemanaPrimeiroDia + 6) % 7;
+      // Obter o primeiro dia do mês
+      const primeiroDiaDoMes = new Date(ano, mes, 1);
+      // Ajustar para que segunda-feira seja o primeiro dia da semana (0)
+      let diaSemanaPrimeiroDia = (primeiroDiaDoMes.getDay() + 6) % 7;
 
-    // Obter a data do início do calendário (segunda-feira da primeira semana)
-    const inicioCalendario = new Date(primeiroDiaDoMes);
-    inicioCalendario.setDate(primeiroDiaDoMes.getDate() - diaSemanaPrimeiroDia);
+      // Obter a data de início do calendário (segunda-feira da primeira semana)
+      const inicioCalendario = new Date(primeiroDiaDoMes);
+      inicioCalendario.setDate(primeiroDiaDoMes.getDate() - diaSemanaPrimeiroDia);
 
-    // Obter o último dia do mês
-    const ultimoDiaDoMes = new Date(ano, mes + 1, 0);
-    let diaSemanaUltimoDia = ultimoDiaDoMes.getDay();
-    diaSemanaUltimoDia = (diaSemanaUltimoDia + 6) % 7;
+      // Obter o último dia do mês
+      const ultimoDiaDoMes = new Date(ano, mes + 1, 0);
+      let diaSemanaUltimoDia = (ultimoDiaDoMes.getDay() + 6) % 7;
 
-    // Obter a data do fim do calendário (domingo da última semana)
-    const fimCalendario = new Date(ultimoDiaDoMes);
-    fimCalendario.setDate(ultimoDiaDoMes.getDate() + (6 - diaSemanaUltimoDia));
+      // Obter a data de fim do calendário (domingo da última semana)
+      const fimCalendario = new Date(ultimoDiaDoMes);
+      fimCalendario.setDate(ultimoDiaDoMes.getDate() + (6 - diaSemanaUltimoDia));
 
-    // Gerar todas as datas entre inicioCalendario e fimCalendario
-    const dataAtualIteracao = new Date(inicioCalendario);
-    while (dataAtualIteracao <= fimCalendario) {
-      datas.push(new Date(dataAtualIteracao));
-      dataAtualIteracao.setDate(dataAtualIteracao.getDate() + 1);
+      // Gerar todas as datas entre inicioCalendario e fimCalendario
+      const dataIteracao = new Date(inicioCalendario);
+      while (dataIteracao <= fimCalendario) {
+        datas.push(new Date(dataIteracao));
+        dataIteracao.setDate(dataIteracao.getDate() + 1);
+      }
+    } else if (modo === "semanal") {
+      // Modo semanal
+      const inicioSemana = getInicioSemana(dataAtual);
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(inicioSemana);
+        date.setDate(inicioSemana.getDate() + i);
+        datas.push(date);
+      }
+    } else if (modo === "diario") {
+      // Modo diário
+      datas.push(new Date(dataAtual));
     }
-  } else {
-    // Modo semanal
-    const inicioSemana = getInicioSemana(dataAtual);
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(inicioSemana);
-      date.setDate(inicioSemana.getDate() + i);
-      datas.push(date);
-    }
-  }
 
-  setDiasCalendario(datas);
-}, [dataAtual, modoMes]);
-
+    setDiasCalendario(datas);
+  }, [dataAtual, modo]);
   // Process the payload to update droppedItems when dataAtual changes
   useEffect(() => {
     const currentWeekDates = diasDaSemana.map(
@@ -321,7 +340,10 @@ useEffect(() => {
   return (
     <>
       <button onClick={alternarModo}>
-        {modoMes ? "Visão Semanal" : "Visão Mensal"}
+       {
+          modo === "diario" ? "Modo Diário" :
+          modo === "semanal" ? "Modo Semanal" : "Modo Mensal"
+       }
       </button>
       <CalendarLayout
         areas={areas}
@@ -335,9 +357,11 @@ useEffect(() => {
         voltarSemana={voltarSemana}
         activeItem={activeItem || { id: "", item: "", uId: "" }}
         headers={headers}
-        modoMes={modoMes}
+        modo={modo}
         irParaProximoMes={irParaProximoMes}
         voltarMes={voltarMes}
+        irParaProximoDia={irParaProximoDia}
+        voltarDia={voltarDia}
       />
       <pre>{JSON.stringify(droppedItems, null, 2)}</pre>
       {/* <pre>{JSON.stringify(headers, null, 2)}</pre> */}

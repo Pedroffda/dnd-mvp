@@ -2,21 +2,25 @@ import React from "react";
 import { Typography, Button, Grid2 } from "@mui/material";
 
 interface DateDisplayProps {
-  mensal?: boolean;
+  modo?: "diario" | "semanal" | "mensal";
   dataAtual: Date;
   irParaProximaSemana: () => void;
   voltarSemana: () => void;
   irParaProximoMes?: () => void;
   voltarMes?: () => void;
+  irParaProximoDia?: () => void;
+  voltarDia?: () => void;
 }
 
 export default function DateDisplay({
-  mensal = false,
+  modo = "semanal",
   dataAtual,
   irParaProximaSemana,
   voltarSemana,
   irParaProximoMes,
   voltarMes,
+  irParaProximoDia,
+  voltarDia,
 }: Readonly<DateDisplayProps>) {
   const getInicioSemana = (date: Date) => {
     const inicio = new Date(date);
@@ -69,6 +73,15 @@ export default function DateDisplay({
     return formatadorMes.format(date).replace(/^\w/, (c) => c.toUpperCase());
   };
 
+  const formatarDia = (date: Date) => {
+    const formatadorDia = new Intl.DateTimeFormat("pt-BR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    return formatadorDia.format(date);
+  };
+
   return (
     <Grid2
       sx={{
@@ -79,8 +92,8 @@ export default function DateDisplay({
     >
       <Button
         variant="text"
-        onClick={mensal ? voltarMes : voltarSemana}
-        disabled={!voltarSemana && !voltarMes}
+        onClick={modo === "diario" ? voltarDia : modo === "semanal" ? voltarSemana : voltarMes}
+        disabled={!voltarSemana && !voltarMes && !voltarDia}
         sx={{
           fontWeight: "bold",
           fontSize: 20,
@@ -89,12 +102,21 @@ export default function DateDisplay({
         {"<"}
       </Button>
       <Typography variant="h6">
-        {mensal ? `${formatarMes(dataAtual)}` : `${formatarSemana(dataAtual)}`}
+        {/* {modo === "diario" ? `${formatarSemana(dataAtual)}` : `${formatarMes(dataAtual)}`} */}
+        {(() => {
+          if (modo === "diario") {
+            return `${formatarDia(dataAtual)}`;
+          } else if (modo === "semanal") {
+            return `${formatarSemana(dataAtual)}`;
+          } else {
+            return `${formatarMes(dataAtual)}`;
+          }
+        })()}
       </Typography>
       <Button
         variant="text"
-        onClick={mensal ? irParaProximoMes : irParaProximaSemana}
-        disabled={!irParaProximaSemana && !irParaProximoMes}
+        onClick={modo === "diario" ? irParaProximoDia : modo === "semanal" ? irParaProximaSemana : irParaProximoMes}
+        disabled={!irParaProximaSemana && !irParaProximoMes && !irParaProximoDia}
         sx={{
           fontWeight: "bold",
           fontSize: 20,
